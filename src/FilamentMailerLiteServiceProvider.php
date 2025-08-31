@@ -2,9 +2,9 @@
 
 namespace Ihasan\FilamentMailerLite;
 
+use Ihasan\FilamentMailerLite\Commands\FilamentMailerLiteCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Ihasan\FilamentMailerLite\Commands\FilamentMailerLiteCommand;
 
 class FilamentMailerLiteServiceProvider extends PackageServiceProvider
 {

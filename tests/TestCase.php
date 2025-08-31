@@ -2,9 +2,9 @@
 
 namespace Ihasan\FilamentMailerLite\Tests;
 
+use Ihasan\FilamentMailerLite\FilamentMailerLiteServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
-use Ihasan\FilamentMailerLite\FilamentMailerLiteServiceProvider;
 
 class TestCase extends Orchestra
 {
