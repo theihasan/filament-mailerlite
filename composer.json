@@ -16,9 +16,11 @@
         }
     ],
     "require": {
-        "php": "^8.4",
+        "php": "^8.2",
         "spatie/laravel-package-tools": "^1.16",
-        "illuminate/contracts": "^11.0||^12.0"
+        "illuminate/contracts": "^11.0||^12.0",
+        "filament/filament": "^3.0",
+        "theihasan/laravel-mailerlite": "^1.0|@dev"
     },
     "require-dev": {
         "laravel/pint": "^1.14",
