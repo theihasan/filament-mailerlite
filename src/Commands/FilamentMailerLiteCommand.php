@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace Ihasan\FilamentMailerLite\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class FilamentMailerLiteCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'filament-mailerlite';
 
     public $description = 'My command';
 

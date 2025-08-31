@@ -1,17 +1,17 @@
 {
-    "name": ":vendor_slug/:package_slug",
-    "description": ":package_description",
+    "name": "theihasan/filament-mailerlite",
+    "description": "Seamlessly integrate MailerLite with your FilamentPHP admin panels using this custom package. Designed for developers building Laravel applications with Filament, this package simplifies email marketing management by connecting your app directly to MailerLite's powerful API.",
     "keywords": [
-        ":vendor_name",
+        "Ihasan",
         "laravel",
-        ":package_slug"
+        "filament-mailerlite"
     ],
-    "homepage": "https://github.com/:vendor_slug/:package_slug",
+    "homepage": "https://github.com/theihasan/filament-mailerlite",
     "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
-            "email": "author@domain.com",
+            "name": "Abul Hassan",
+            "email": "imabulhasan99@gmail.com",
             "role": "Developer"
         }
     ],
@@ -30,18 +30,17 @@
         "pestphp/pest-plugin-laravel": "^4.0",
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan-deprecation-rules": "^2.0",
-        "phpstan/phpstan-phpunit": "^2.0",
-        "spatie/laravel-ray": "^1.35"
+        "phpstan/phpstan-phpunit": "^2.0"
     },
     "autoload": {
         "psr-4": {
-            "VendorName\\Skeleton\\": "src/",
-            "VendorName\\Skeleton\\Database\\Factories\\": "database/factories/"
+            "Ihasan\\FilamentMailerLite\\": "src/",
+            "Ihasan\\FilamentMailerLite\\Database\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "VendorName\\Skeleton\\Tests\\": "tests/",
+            "Ihasan\\FilamentMailerLite\\Tests\\": "tests/",
             "Workbench\\App\\": "workbench/app/"
         }
     },
@@ -63,10 +62,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "VendorName\\Skeleton\\SkeletonServiceProvider"
+                "Ihasan\\FilamentMailerLite\\FilamentMailerLiteServiceProvider"
             ],
             "aliases": {
-                "Skeleton": "VendorName\\Skeleton\\Facades\\Skeleton"
+                "FilamentMailerLite": "Ihasan\\FilamentMailerLite\\Facades\\FilamentMailerLite"
             }
         }
     },
