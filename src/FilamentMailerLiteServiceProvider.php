@@ -12,6 +12,7 @@ class FilamentMailerLiteServiceProvider extends PackageServiceProvider
     {
         $package
             ->name('filament-mailerlite')
-            ->hasConfigFile('filament-mailerlite');
+            ->hasConfigFile('filament-mailerlite')
+            ->hasViews('filament-mailerlite');
     }
 }
