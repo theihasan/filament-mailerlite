@@ -6,6 +6,8 @@ use Filament\Contracts\Plugin;
 use Filament\Navigation\NavigationItem;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
+use Ihasan\FilamentMailerLite\Pages\MailerLiteDashboard;
+use Ihasan\LaravelMailerlite\Facades\MailerLite;
 
 class FilamentMailerLite implements Plugin
 {
@@ -22,12 +24,16 @@ class FilamentMailerLite implements Plugin
 
     public function register(Panel $panel): void
     {
+        $panel->pages([
+            MailerLiteDashboard::class,
+        ]);
+
         $navigationItems = $this->navigationItems;
         
         if ($this->hasDefaultNavigationItems) {
             $defaultItems = [
                 NavigationItem::make('MailerLite Dashboard')
-                    ->url('#')
+                    ->url(fn() => MailerLiteDashboard::getUrl())
                     ->icon('heroicon-o-envelope')
                     ->group($this->getNavigationGroup())
                     ->sort(1),
