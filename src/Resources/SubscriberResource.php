@@ -161,20 +161,16 @@ class SubscriberResource extends Resource
 
                 Tables\Columns\TextColumn::make('subscribed_at')
                     ->dateTime()
-                    ->native(false)
                     ->sortable()
-                    ->native(false)
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
-                    ->native(false)
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                     
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
-                    ->native(false)
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
