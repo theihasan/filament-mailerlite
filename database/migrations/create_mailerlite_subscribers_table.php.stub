@@ -1,0 +1,54 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up()
+    {
+        Schema::create(config('filament-mailerlite.subscribers_table'), function (Blueprint $table) {
+            $table->id();
+            $table->string('mailerlite_id')->nullable()->unique()->index();
+            $table->string('email')->unique()->index();
+            $table->string('name')->nullable();
+            
+            // Statistics
+            $table->integer('sent')->default(0);
+            $table->integer('opens_count')->default(0);
+            $table->integer('clicks_count')->default(0);
+            $table->decimal('open_rate', 5, 2)->default(0);
+            $table->decimal('click_rate', 5, 2)->default(0);
+            
+            // Network & Location
+            $table->string('ip_address')->nullable();
+            $table->json('location')->nullable();
+            
+            // Status & Dates
+            $table->enum('status', ['active', 'unsubscribed', 'bounced', 'junk'])->default('active');
+            $table->timestamp('subscribed_at')->nullable();
+            $table->timestamp('unsubscribed_at')->nullable();
+            $table->timestamp('opted_in_at')->nullable();
+            $table->string('optin_ip')->nullable();
+            $table->string('source')->nullable();
+            
+            // Custom fields and groups
+            $table->json('fields')->nullable();
+            $table->json('groups')->nullable();
+            
+            $table->timestamps();
+            $table->softDeletes();
+            
+            // Indexes for performance
+            $table->index(['status', 'created_at']);
+            $table->index(['subscribed_at']);
+            $table->index(['unsubscribed_at']);
+        });
+    }
+
+    public function down()
+    {
+        Schema::dropIfExists('mailerlite_subscribers');
+    }
+};

@@ -31,4 +31,14 @@ return [
     |
     */
     'timeout' => env('MAILERLITE_TIMEOUT', 30),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Database Table Name
+    |--------------------------------------------------------------------------
+    |
+    | The name of the table used to store MailerLite subscribers locally.
+    |
+    */
+    'subscribers_table' => env('MAILERLITE_SUBSCRIBERS_TABLE', 'mailerlite_subscribers'),
 ];
