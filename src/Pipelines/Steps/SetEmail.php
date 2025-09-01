@@ -19,3 +19,4 @@ class SetEmail
         return $next($pipeline);
     }
 }
+

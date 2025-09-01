@@ -19,3 +19,4 @@ class SetName
         return $next($pipeline);
     }
 }
+

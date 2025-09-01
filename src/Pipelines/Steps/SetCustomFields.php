@@ -35,3 +35,4 @@ class SetCustomFields
         return $next($pipeline);
     }
 }
+
