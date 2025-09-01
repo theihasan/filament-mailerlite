@@ -64,8 +64,11 @@ class MailerLiteDashboard extends Page
                         }
 
                         $subscriber = MailerLite::subscribers()
-                            ->email($data['email'])
-                            ->named($data['name'] ?? '');
+                            ->email($data['email']);
+
+                        if (!empty($data['name'])) {
+                            $subscriber->named($data['name']);
+                        }
 
                         if (!empty($fields)) {
                             $subscriber->withFields($fields);
