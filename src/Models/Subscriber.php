@@ -2,11 +2,13 @@
 
 namespace Ihasan\FilamentMailerLite\Models;
 
+use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Ihasan\LaravelMailerlite\Facades\MailerLite;
 use Ihasan\FilamentMailerLite\DTOs\SubscriberData;
 use Ihasan\FilamentMailerLite\Enums\SubscriberStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Ihasan\FilamentMailerLite\Pipelines\SubscriberPipeline;
 
 class Subscriber extends Model
 {
@@ -74,30 +76,16 @@ class Subscriber extends Model
     public function syncWithMailerLite(): array
     {
         try {
+            $data = [
+                'email' => $this->email,
+                'name' => $this->name,
+                'fields' => $this->fields ?? [],
+            ];
+
             if ($this->mailerlite_id) {
-                $builder = MailerLite::subscribers()->email($this->email);
-                
-                if (!empty($this->name)) {
-                    $builder->named($this->name);
-                }
-                
-                if (!empty($this->fields)) {
-                    $builder->withFields($this->fields);
-                }
-                
-                return $builder->update($this->mailerlite_id);
+                return SubscriberPipeline::create($data)->update($this->mailerlite_id);
             } else {
-                $builder = MailerLite::subscribers()->email($this->email);
-                
-                if (!empty($this->name)) {
-                    $builder->named($this->name);
-                }
-                
-                if (!empty($this->fields)) {
-                    $builder->withFields($this->fields);
-                }
-                
-                $result = $builder->subscribe();
+                $result = SubscriberPipeline::create($data)->process();
                 
                 if (isset($result['id'])) {
                     $this->update(['mailerlite_id' => $result['id']]);
@@ -113,16 +101,16 @@ class Subscriber extends Model
     /**
      * Create subscriber from MailerLite data
      */
-    public static function createFromMailerLite(array $data): self
+    public static function createFromMailerLite(array $data): static
     {
         $dto = SubscriberData::fromMailerLiteArray($data);
-        return self::create($dto->toArray());
+        return static::create($dto->toArray());
     }
 
     /**
      * Create subscriber from DTO
      */
-    public static function createFromDto(SubscriberData $dto): self
+    public static function createFromDto(SubscriberData $dto): static
     {
         return self::create($dto->toArray());
     }
@@ -130,7 +118,7 @@ class Subscriber extends Model
     /**
      * Scope for active subscribers
      */
-    public function scopeActive($query)
+    public function scopeActive($query): Builder
     {
         return $query->where('status', SubscriberStatus::ACTIVE)->whereNull('unsubscribed_at');
     }
@@ -138,7 +126,7 @@ class Subscriber extends Model
     /**
      * Scope for unsubscribed subscribers
      */
-    public function scopeUnsubscribed($query)
+    public function scopeUnsubscribed($query): Builder
     {
         return $query->where('status', SubscriberStatus::UNSUBSCRIBED)->orWhereNotNull('unsubscribed_at');
     }
