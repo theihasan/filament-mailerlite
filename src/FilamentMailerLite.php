@@ -2,12 +2,13 @@
 
 namespace Ihasan\FilamentMailerLite;
 
+use Filament\Panel;
 use Filament\Contracts\Plugin;
 use Filament\Navigation\NavigationItem;
-use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Ihasan\FilamentMailerLite\Pages\MailerLiteDashboard;
 use Ihasan\LaravelMailerlite\Facades\MailerLite;
+use Ihasan\FilamentMailerLite\Pages\MailerLiteDashboard;
+use Ihasan\FilamentMailerLite\Resources\SubscriberResource;
 
 class FilamentMailerLite implements Plugin
 {
@@ -24,22 +25,30 @@ class FilamentMailerLite implements Plugin
 
     public function register(Panel $panel): void
     {
-        $panel->pages([
-            MailerLiteDashboard::class,
-        ]);
+        $panel
+            ->pages([
+                MailerLiteDashboard::class,
+            ])
+            ->resources([
+                SubscriberResource::class,
+            ]);
+
+        
 
         $navigationItems = $this->navigationItems;
         
         if ($this->hasDefaultNavigationItems) {
             $defaultItems = [
-                NavigationItem::make('MailerLite Dashboard')
+                NavigationItem::make('Dashboard')
                     ->url(fn() => MailerLiteDashboard::getUrl())
                     ->icon('heroicon-o-envelope')
                     ->group($this->getNavigationGroup())
                     ->sort(1),
                 
                 NavigationItem::make('Subscribers')
-                    ->url('#')
+                    ->url(function(){
+                        return SubscriberResource::getUrl();
+                    })
                     ->icon('heroicon-o-users')
                     ->group($this->getNavigationGroup())
                     ->sort(2),
