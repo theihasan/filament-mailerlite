@@ -13,6 +13,9 @@ class FilamentMailerLiteServiceProvider extends PackageServiceProvider
         $package
             ->name('filament-mailerlite')
             ->hasConfigFile('filament-mailerlite')
-            ->hasViews('filament-mailerlite');
+            ->hasViews('filament-mailerlite')
+            ->hasMigrations([
+                'create_mailerlite_subscribers_table'
+            ]);
     }
 }
