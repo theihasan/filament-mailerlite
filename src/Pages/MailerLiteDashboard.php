@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Ihasan\LaravelMailerlite\Facades\MailerLite;
+use Ihasan\FilamentMailerLite\Pipelines\SubscriberPipeline;
 
 class MailerLiteDashboard extends Page
 {
@@ -55,26 +56,7 @@ class MailerLiteDashboard extends Page
                 })
                 ->action(function (array $data) {
                     try {
-                        $fields = [];
-                        if (!empty($data['company'])) {
-                            $fields['company'] = $data['company'];
-                        }
-                        if (!empty($data['phone'])) {
-                            $fields['phone'] = $data['phone'];
-                        }
-
-                        $subscriber = MailerLite::subscribers()
-                            ->email($data['email']);
-
-                        if (!empty($data['name'])) {
-                            $subscriber->named($data['name']);
-                        }
-
-                        if (!empty($fields)) {
-                            $subscriber->withFields($fields);
-                        }
-
-                        $result = $subscriber->subscribe();
+                        $result = SubscriberPipeline::create($data)->process();
 
                         Notification::make()
                             ->title('Subscriber added successfully!')
