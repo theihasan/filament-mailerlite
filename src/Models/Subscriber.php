@@ -24,8 +24,6 @@ class Subscriber extends Model
         'ip_address',
         'subscribed_at',
         'unsubscribed_at',
-        'created_at',
-        'updated_at',
         'fields',
         'groups',
         'location',
@@ -34,6 +32,9 @@ class Subscriber extends Model
         'opted_in_at',
         'optin_ip',
     ];
+
+    public $incrementing = true;
+    protected $keyType = 'int';
 
     public function casts(): array
     {
@@ -74,17 +75,29 @@ class Subscriber extends Model
     {
         try {
             if ($this->mailerlite_id) {
-                return MailerLite::subscribers()
-                    ->email($this->email)
-                    ->named($this->name)
-                    ->withFields($this->fields ?? [])
-                    ->update($this->mailerlite_id);
+                $builder = MailerLite::subscribers()->email($this->email);
+                
+                if (!empty($this->name)) {
+                    $builder->named($this->name);
+                }
+                
+                if (!empty($this->fields)) {
+                    $builder->withFields($this->fields);
+                }
+                
+                return $builder->update($this->mailerlite_id);
             } else {
-                $result = MailerLite::subscribers()
-                    ->email($this->email)
-                    ->named($this->name)
-                    ->withFields($this->fields ?? [])
-                    ->subscribe();
+                $builder = MailerLite::subscribers()->email($this->email);
+                
+                if (!empty($this->name)) {
+                    $builder->named($this->name);
+                }
+                
+                if (!empty($this->fields)) {
+                    $builder->withFields($this->fields);
+                }
+                
+                $result = $builder->subscribe();
                 
                 if (isset($result['id'])) {
                     $this->update(['mailerlite_id' => $result['id']]);
