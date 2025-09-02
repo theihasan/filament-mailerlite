@@ -35,15 +35,37 @@ class Segment extends Model
     public function syncWithMailerLite(): array
     {
         try {
-            $data = [
-                'name' => $this->name,
-                'rules' => $this->rules ?? [],
-            ];
-
             if ($this->mailerlite_id) {
-                $result = MailerLite::segments()->update($this->mailerlite_id, $data);
+                // Update existing segment
+                $builder = MailerLite::segments()->name($this->name);
+                
+                // Add rules as filters
+                if (!empty($this->rules)) {
+                    foreach ($this->rules as $rule) {
+                        if (isset($rule['field'], $rule['operator'], $rule['value'])) {
+                            $builder->whereField($rule['field'], $rule['operator'], $rule['value']);
+                        }
+                    }
+                }
+                
+                $result = $builder->update($this->mailerlite_id);
             } else {
-                $result = MailerLite::segments()->create($data);
+                // Create new segment
+                $builder = MailerLite::segments()->name($this->name);
+                
+                // Add rules as filters
+                if (!empty($this->rules)) {
+                    foreach ($this->rules as $rule) {
+                        if (isset($rule['field'], $rule['operator'], $rule['value'])) {
+                            $builder->whereField($rule['field'], $rule['operator'], $rule['value']);
+                        }
+                    }
+                } else {
+                    // Add a default filter if no rules are provided
+                    $builder->whereField('email', 'is_not_empty', '');
+                }
+                
+                $result = $builder->create();
                 
                 if (isset($result['id'])) {
                     $this->update(['mailerlite_id' => $result['id']]);

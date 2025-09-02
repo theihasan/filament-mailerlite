@@ -37,15 +37,18 @@ class Group extends Model
     public function syncWithMailerLite(): array
     {
         try {
-            $data = [
-                'name' => $this->name,
-                'description' => $this->description,
-            ];
-
             if ($this->mailerlite_id) {
-                $result = MailerLite::groups()->update($this->mailerlite_id, $data);
+                // Update existing group
+                $result = MailerLite::groups()
+                    ->name($this->name)
+                    ->withDescription($this->description)
+                    ->update($this->mailerlite_id);
             } else {
-                $result = MailerLite::groups()->create($data);
+                // Create new group
+                $result = MailerLite::groups()
+                    ->name($this->name)
+                    ->withDescription($this->description)
+                    ->create();
                 
                 if (isset($result['id'])) {
                     $this->update(['mailerlite_id' => $result['id']]);
