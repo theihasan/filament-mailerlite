@@ -17,6 +17,8 @@ class FilamentMailerLiteServiceProvider extends PackageServiceProvider
             ->hasMigrations([
                 'create_mailerlite_subscribers_table',
                 'create_mailerlite_campaigns_table',
+                'create_mailerlite_groups_table',
+                'create_mailerlite_segments_table',
             ]);
     }
 }
