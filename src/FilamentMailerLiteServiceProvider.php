@@ -19,6 +19,7 @@ class FilamentMailerLiteServiceProvider extends PackageServiceProvider
                 'create_mailerlite_campaigns_table',
                 'create_mailerlite_groups_table',
                 'create_mailerlite_segments_table',
+                'add_description_to_mailerlite_groups_table',
             ]);
     }
 }

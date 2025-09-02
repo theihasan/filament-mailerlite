@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Group extends Model
 {
+    public $incrementing = true;
+    protected $keyType = 'int';
     protected $fillable = [
         'mailerlite_id',
         'name',
