@@ -10,6 +10,8 @@ use Ihasan\LaravelMailerlite\Facades\MailerLite;
 use Ihasan\FilamentMailerLite\Pages\MailerLiteDashboard;
 use Ihasan\FilamentMailerLite\Resources\SubscriberResource;
 use Ihasan\FilamentMailerLite\Resources\CampaignResource;
+use Ihasan\FilamentMailerLite\Resources\GroupResource;
+use Ihasan\FilamentMailerLite\Resources\SegmentResource;
 
 class FilamentMailerLite implements Plugin
 {
@@ -33,6 +35,8 @@ class FilamentMailerLite implements Plugin
             ->resources([
                 SubscriberResource::class,
                 CampaignResource::class,
+                GroupResource::class,
+                SegmentResource::class,
             ]);
 
         
@@ -68,6 +72,16 @@ class FilamentMailerLite implements Plugin
                     ->icon('heroicon-o-cog-6-tooth')
                     ->group($this->getNavigationGroup())
                     ->sort(4),
+                NavigationItem::make('Groups')
+                    ->url(function(){ return GroupResource::getUrl(); })
+                    ->icon(config('filament-mailerlite.icons.groups_navigation', 'heroicon-o-rectangle-group'))
+                    ->group($this->getNavigationGroup())
+                    ->sort(5),
+                NavigationItem::make('Segments')
+                    ->url(function(){ return SegmentResource::getUrl(); })
+                    ->icon(config('filament-mailerlite.icons.segments_navigation', 'heroicon-o-squares-2x2'))
+                    ->group($this->getNavigationGroup())
+                    ->sort(6),
             ];
             
             $navigationItems = array_merge($defaultItems, $navigationItems);
