@@ -55,6 +55,8 @@ return [
     'icons' => [
         'navigation' => 'heroicon-o-users',
         'campaign_navigation' => 'heroicon-o-megaphone',
+        'groups_navigation' => 'heroicon-o-rectangle-group',
+        'segments_navigation' => 'heroicon-o-squares-2x2',
         'actions' => [
             'create' => 'heroicon-o-plus-circle',
             'import' => 'heroicon-o-cloud-arrow-down',
@@ -68,6 +70,8 @@ return [
             'schedule' => 'heroicon-o-calendar-days',
             'duplicate' => 'heroicon-o-square-2-stack',
             'cancel_campaign' => 'heroicon-o-no-symbol',
+            'add_to_group' => 'heroicon-o-user-plus',
+            'remove_from_group' => 'heroicon-o-user-minus',
         ],
     ],
 ];
