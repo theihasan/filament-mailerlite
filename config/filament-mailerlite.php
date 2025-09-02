@@ -41,4 +41,28 @@ return [
     |
     */
     'subscribers_table' => env('MAILERLITE_SUBSCRIBERS_TABLE', 'mailerlite_subscribers'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | UI Icons
+    |--------------------------------------------------------------------------
+    |
+    | Configure Heroicons used throughout the
+    | Filament resources and pages. You can override any of these in your app's
+    | config by publishing this file and changing the classes.
+    |
+    */
+    'icons' => [
+        'navigation' => 'heroicon-o-users',
+        'actions' => [
+            'create' => 'heroicon-o-plus-circle',
+            'import' => 'heroicon-o-cloud-arrow-down',
+            'sync' => 'heroicon-o-arrow-path',
+            'view' => 'heroicon-o-eye',
+            'edit' => 'heroicon-o-pencil-square',
+            'delete' => 'heroicon-o-trash',
+            'cancel' => 'heroicon-o-x-mark',
+            'send_test_email' => 'heroicon-o-paper-airplane',
+        ],
+    ],
 ];
