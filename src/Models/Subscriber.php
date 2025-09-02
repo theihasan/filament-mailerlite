@@ -2,7 +2,7 @@
 
 namespace Ihasan\FilamentMailerLite\Models;
 
-use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Ihasan\LaravelMailerlite\Facades\MailerLite;
 use Ihasan\FilamentMailerLite\DTOs\SubscriberData;
