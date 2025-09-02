@@ -7,7 +7,6 @@ use Filament\Resources\Pages\ListRecords;
 use Ihasan\FilamentMailerLite\Resources\SubscriberResource;
 use Ihasan\FilamentMailerLite\Models\Subscriber;
 use Ihasan\LaravelMailerlite\Facades\MailerLite;
-use Ihasan\LaravelMailerlite\Manager\MailerLiteManager;
 use Filament\Notifications\Notification;
 
 class ListSubscribers extends ListRecords

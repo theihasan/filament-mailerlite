@@ -82,16 +82,26 @@ class Subscriber extends Model
                 'fields' => $this->fields ?? [],
             ];
 
+            // If we have a mailerlite_id, try to update
             if ($this->mailerlite_id) {
                 return SubscriberPipeline::create($data)->update($this->mailerlite_id);
             } else {
-                $result = SubscriberPipeline::create($data)->process();
+                // Check if subscriber exists in MailerLite by email
+                $existing = MailerLite::subscribers()->email($this->email)->find();
                 
-                if (isset($result['id'])) {
-                    $this->update(['mailerlite_id' => $result['id']]);
+                if ($existing && isset($existing['id'])) {
+                    $result = SubscriberPipeline::create($data)->update($existing['id']);
+                    $this->update(['mailerlite_id' => $existing['id']]);
+                    return $result;
+                } else {
+                    $result = SubscriberPipeline::create($data)->process();
+                    
+                    if (isset($result['id'])) {
+                        $this->update(['mailerlite_id' => $result['id']]);
+                    }
+                    
+                    return $result;
                 }
-                
-                return $result;
             }
         } catch (\Exception $e) {
             throw new \Exception('Failed to sync with MailerLite: ' . $e->getMessage());
