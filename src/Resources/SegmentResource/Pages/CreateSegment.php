@@ -8,6 +8,27 @@ use Ihasan\FilamentMailerLite\Resources\SegmentResource;
 class CreateSegment extends CreateRecord
 {
     protected static string $resource = SegmentResource::class;
+
+    protected function afterCreate(): void
+    {
+        try {
+            $this->record->syncWithMailerLite();
+            
+            \Filament\Notifications\Notification::make()
+                ->title('Segment Created Successfully!')
+                ->body("Segment '{$this->record->name}' has been created locally and synced with MailerLite.")
+                ->success()
+                ->duration(5000)
+                ->send();
+        } catch (\Exception $e) {
+            \Filament\Notifications\Notification::make()
+                ->title('Partial Success')
+                ->body('Segment was created locally but could not be synced with MailerLite: ' . $e->getMessage())
+                ->warning()
+                ->duration(8000)
+                ->send();
+        }
+    }
 }
 
 
