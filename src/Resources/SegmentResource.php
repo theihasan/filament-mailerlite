@@ -42,21 +42,8 @@ class SegmentResource extends Resource
                 ->icon($icons['sync'] ?? 'heroicon-o-arrow-path')
                 ->action(function (Segment $record) {
                     try {
-                        if ($record->mailerlite_id) {
-                            MailerLite::segments()->update($record->mailerlite_id, [
-                                'name' => $record->name,
-                                'rules' => $record->rules ?? [],
-                            ]);
-                        } else {
-                            $created = MailerLite::segments()->create([
-                                'name' => $record->name,
-                                'rules' => $record->rules ?? [],
-                            ]);
-                            if (isset($created['id'])) {
-                                $record->update(['mailerlite_id' => $created['id']]);
-                            }
-                        }
-                        Notification::make()->title('Segment synced')->success()->send();
+                        $record->syncWithMailerLite();
+                        Notification::make()->title('Segment synced successfully')->success()->send();
                     } catch (\Throwable $e) {
                         Notification::make()->title('Sync failed')->body($e->getMessage())->danger()->send();
                     }

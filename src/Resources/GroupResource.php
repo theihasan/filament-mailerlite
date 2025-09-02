@@ -42,21 +42,8 @@ class GroupResource extends Resource
                 ->icon($icons['sync'] ?? 'heroicon-o-arrow-path')
                 ->action(function (Group $record) {
                     try {
-                        if ($record->mailerlite_id) {
-                            MailerLite::groups()->update($record->mailerlite_id, [
-                                'name' => $record->name,
-                                'description' => $record->description,
-                            ]);
-                        } else {
-                            $created = MailerLite::groups()->create([
-                                'name' => $record->name,
-                                'description' => $record->description,
-                            ]);
-                            if (isset($created['id'])) {
-                                $record->update(['mailerlite_id' => $created['id']]);
-                            }
-                        }
-                        Notification::make()->title('Group synced')->success()->send();
+                        $record->syncWithMailerLite();
+                        Notification::make()->title('Group synced successfully')->success()->send();
                     } catch (\Throwable $e) {
                         Notification::make()->title('Sync failed')->body($e->getMessage())->danger()->send();
                     }
