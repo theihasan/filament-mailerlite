@@ -21,35 +21,24 @@ class CreateSubscriber extends CreateRecord
 
     protected function getHeaderActions(): array
     {
-        return [
-            Actions\Action::make('importFromMailerLite')
-                ->label('Import from MailerLite')
-                ->icon('heroicon-o-cloud-arrow-down')
-                ->color('info')
-                ->outlined()
-                ->action(function () {
-                    Notification::make()
-                        ->title('Import Feature')
-                        ->body('Import functionality can be implemented to pull existing subscribers from MailerLite.')
-                        ->info()
-                        ->send();
-                }),
-        ];
+        return [];
     }
 
     protected function getCreateFormAction(): Actions\Action
     {
+        $icons = config('filament-mailerlite.icons.actions');
         return parent::getCreateFormAction()
             ->label('Create & Sync with MailerLite')
-            ->icon('heroicon-o-plus-circle')
+            ->icon($icons['create'] ?? 'heroicon-o-plus-circle')
             ->color('success');
     }
 
     protected function getCancelFormAction(): Actions\Action
     {
+        $icons = config('filament-mailerlite.icons.actions');
         return parent::getCancelFormAction()
             ->label('Cancel')
-            ->icon('heroicon-o-x-mark')
+            ->icon($icons['cancel'] ?? 'heroicon-o-x-mark')
             ->color('gray');
     }
 

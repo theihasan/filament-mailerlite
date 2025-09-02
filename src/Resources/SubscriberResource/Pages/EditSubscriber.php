@@ -13,11 +13,13 @@ class EditSubscriber extends EditRecord
 
     protected function getHeaderActions(): array
     {
+        $icons = config('filament-mailerlite.icons.actions');
         return [
-            Actions\ViewAction::make(),
+            Actions\ViewAction::make()
+                ->icon($icons['view'] ?? 'heroicon-o-eye'),
             Actions\Action::make('sync')
                 ->label('Sync with MailerLite')
-                ->icon('heroicon-o-arrow-path')
+                ->icon($icons['sync'] ?? 'heroicon-o-arrow-path')
                 ->color('info')
                 ->action(function () {
                     try {
@@ -36,7 +38,8 @@ class EditSubscriber extends EditRecord
                     }
                 })
                 ->requiresConfirmation(),
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+                ->icon($icons['delete'] ?? 'heroicon-o-trash'),
         ];
     }
 

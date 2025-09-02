@@ -19,10 +19,11 @@ class ViewSubscriber extends ViewRecord
 
     protected function getHeaderActions(): array
     {
+        $icons = config('filament-mailerlite.icons.actions');
         return [
             Actions\Action::make('sendTestEmail')
                 ->label('Send Test Email')
-                ->icon('heroicon-o-paper-airplane')
+                ->icon($icons['send_test_email'] ?? 'heroicon-o-paper-airplane')
                 ->color('info')
                 ->outlined()
                 ->action(function () {
@@ -35,7 +36,7 @@ class ViewSubscriber extends ViewRecord
             
             Actions\Action::make('sync')
                 ->label('Sync with MailerLite')
-                ->icon('heroicon-o-arrow-path')
+                ->icon($icons['sync'] ?? 'heroicon-o-arrow-path')
                 ->color('warning')
                 ->action(function () {
                     try {
@@ -62,11 +63,11 @@ class ViewSubscriber extends ViewRecord
                 ->modalSubmitActionLabel('Sync Now'),
             
             Actions\EditAction::make()
-                ->icon('heroicon-o-pencil-square')
+                ->icon($icons['edit'] ?? 'heroicon-o-pencil-square')
                 ->color('primary'),
             
             Actions\DeleteAction::make()
-                ->icon('heroicon-o-trash')
+                ->icon($icons['delete'] ?? 'heroicon-o-trash')
                 ->color('danger')
                 ->requiresConfirmation()
                 ->modalHeading('Delete Subscriber')

@@ -21,7 +21,7 @@ class SubscriberResource extends Resource
 {
     protected static ?string $model = Subscriber::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static ?string $navigationIcon = null;
 
     protected static ?string $navigationLabel = 'Subscribers';
 
@@ -39,6 +39,7 @@ class SubscriberResource extends Resource
                     ->description('Basic subscriber details and contact information')
                     ->icon('heroicon-o-user')
                     ->schema([
+                        Forms\Components\Hidden::make('mailerlite_id'),
                         Forms\Components\TextInput::make('email')
                             ->email()
                             ->required()
@@ -64,7 +65,7 @@ class SubscriberResource extends Resource
                     ->columns(2)
                     ->collapsible(),
 
-                Forms\Components\Section::make('🏷️ Custom Fields')
+                Forms\Components\Section::make('Custom Fields')
                     ->description('Additional subscriber information and custom data')
                     ->icon('heroicon-o-tag')
                     ->schema([
@@ -77,7 +78,7 @@ class SubscriberResource extends Resource
                     ])
                     ->collapsible(),
 
-                Forms\Components\Section::make('📊 Performance Statistics')
+                Forms\Components\Section::make('Performance Statistics')
                     ->description('Email engagement metrics and performance data')
                     ->icon('heroicon-o-chart-bar')
                     ->schema([
@@ -130,7 +131,7 @@ class SubscriberResource extends Resource
                     ])
                     ->collapsible(),
 
-                Forms\Components\Section::make('📅 Timeline & History')
+                Forms\Components\Section::make('Timeline & History')
                     ->description('Important dates and subscription history')
                     ->icon('heroicon-o-clock')
                     ->schema([
@@ -162,6 +163,7 @@ class SubscriberResource extends Resource
 
     public static function table(Table $table): Table
     {
+        $icons = config('filament-mailerlite.icons.actions');
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('email')
@@ -227,10 +229,12 @@ class SubscriberResource extends Resource
                     ->label('Subscribed in last 30 days'),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->icon($icons['view'] ?? 'heroicon-o-eye'),
+                Tables\Actions\EditAction::make()
+                    ->icon($icons['edit'] ?? 'heroicon-o-pencil-square'),
                 Tables\Actions\Action::make('sync')
-                    ->icon('heroicon-o-arrow-path')
+                    ->icon($icons['sync'] ?? 'heroicon-o-arrow-path')
                     ->color('info')
                     ->action(function (Subscriber $record) {
                         try {
@@ -248,14 +252,15 @@ class SubscriberResource extends Resource
                         }
                     })
                     ->requiresConfirmation(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->icon($icons['delete'] ?? 'heroicon-o-trash'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\BulkAction::make('sync_selected')
                         ->label('Sync with MailerLite')
-                        ->icon('heroicon-o-arrow-path')
+                        ->icon($icons['sync'] ?? 'heroicon-o-arrow-path')
                         ->color('info')
                         ->action(function ($records) {
                             $successful = 0;
@@ -462,6 +467,9 @@ class SubscriberResource extends Resource
 
     public static function getPages(): array
     {
+        if (static::$navigationIcon === null) {
+            static::$navigationIcon = config('filament-mailerlite.icons.navigation', 'heroicon-o-users');
+        }
         return [
             'index' => Pages\ListSubscribers::route('/'),
             'create' => Pages\CreateSubscriber::route('/create'),

@@ -15,11 +15,13 @@ class ListSubscribers extends ListRecords
 
     protected function getHeaderActions(): array
     {
+        $icons = config('filament-mailerlite.icons.actions');
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->icon($icons['create'] ?? 'heroicon-o-plus-circle'),
             Actions\Action::make('importFromMailerLite')
                 ->label('Import from MailerLite')
-                ->icon('heroicon-o-cloud-arrow-down')
+                ->icon($icons['import'] ?? 'heroicon-o-cloud-arrow-down')
                 ->color('info')
                 ->action(function () {
                     try {
