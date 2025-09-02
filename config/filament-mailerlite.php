@@ -54,6 +54,7 @@ return [
     */
     'icons' => [
         'navigation' => 'heroicon-o-users',
+        'campaign_navigation' => 'heroicon-o-megaphone',
         'actions' => [
             'create' => 'heroicon-o-plus-circle',
             'import' => 'heroicon-o-cloud-arrow-down',
@@ -63,6 +64,10 @@ return [
             'delete' => 'heroicon-o-trash',
             'cancel' => 'heroicon-o-x-mark',
             'send_test_email' => 'heroicon-o-paper-airplane',
+            'send' => 'heroicon-o-paper-airplane',
+            'schedule' => 'heroicon-o-calendar-days',
+            'duplicate' => 'heroicon-o-square-2-stack',
+            'cancel_campaign' => 'heroicon-o-no-symbol',
         ],
     ],
 ];
