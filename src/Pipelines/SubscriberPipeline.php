@@ -46,7 +46,7 @@ class SubscriberPipeline
                 SetName::class,
                 SetCustomFields::class,
             ])
-            ->then(fn($pipeline) => $pipeline->builder->update($mailerliteId));
+            ->then(fn($pipeline) => $pipeline->builder->updateById($mailerliteId));
     }
 
     public function getData(): array
