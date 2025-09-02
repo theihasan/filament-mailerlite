@@ -9,6 +9,7 @@ use Filament\Support\Concerns\EvaluatesClosures;
 use Ihasan\LaravelMailerlite\Facades\MailerLite;
 use Ihasan\FilamentMailerLite\Pages\MailerLiteDashboard;
 use Ihasan\FilamentMailerLite\Resources\SubscriberResource;
+use Ihasan\FilamentMailerLite\Resources\CampaignResource;
 
 class FilamentMailerLite implements Plugin
 {
@@ -31,6 +32,7 @@ class FilamentMailerLite implements Plugin
             ])
             ->resources([
                 SubscriberResource::class,
+                CampaignResource::class,
             ]);
 
         
@@ -49,13 +51,15 @@ class FilamentMailerLite implements Plugin
                     ->url(function(){
                         return SubscriberResource::getUrl();
                     })
-                    ->icon('heroicon-o-users')
+                    ->icon(config('filament-mailerlite.icons.navigation', 'heroicon-o-users'))
                     ->group($this->getNavigationGroup())
                     ->sort(2),
                     
                 NavigationItem::make('Campaigns')
-                    ->url('#')
-                    ->icon('heroicon-o-megaphone')
+                    ->url(function(){
+                        return CampaignResource::getUrl();
+                    })
+                    ->icon(config('filament-mailerlite.icons.campaign_navigation', 'heroicon-o-megaphone'))
                     ->group($this->getNavigationGroup())
                     ->sort(3),
                     
