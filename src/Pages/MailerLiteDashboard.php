@@ -17,6 +17,7 @@ class MailerLiteDashboard extends Page
     protected static string $view = 'filament-mailerlite::pages.dashboard';
     protected static ?string $title = 'MailerLite Dashboard';
     protected static ?string $navigationLabel = 'MailerLite Dashboard';
+    protected static ?string $slug = 'mailer-lite-dashboard';
     
     public function getTitle(): string
     {
