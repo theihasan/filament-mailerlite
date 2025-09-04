@@ -23,7 +23,7 @@ class GroupResource extends Resource
     {
         return $form->schema([
             Forms\Components\TextInput::make('name')->required()->maxLength(255),
-            Forms\Components\Textarea::make('description')->rows(3),
+            Forms\Components\Textarea::make('description')->required()->rows(3),
         ]);
     }
 
@@ -48,10 +48,79 @@ class GroupResource extends Resource
                         Notification::make()->title('Sync failed')->body($e->getMessage())->danger()->send();
                     }
                 }),
-            Tables\Actions\DeleteAction::make()->icon($icons['delete'] ?? 'heroicon-o-trash')
-                ->after(function (Group $record) {
+            Tables\Actions\Action::make('delete')
+                ->label('Delete')
+                ->icon($icons['delete'] ?? 'heroicon-o-trash')
+                ->color('danger')
+                ->requiresConfirmation()
+                ->modalHeading('Delete Group')
+                ->modalDescription(function (Group $record) {
+                    $description = "Are you sure you want to delete the group '{$record->name}'?";
+                    
                     if ($record->mailerlite_id) {
-                        try { MailerLite::groups()->delete($record->mailerlite_id); } catch (\Throwable $e) {}
+                        $description .= "\n\nThis will also delete the group from MailerLite and cannot be undone.";
+                    } else {
+                        $description .= "\n\nThis group only exists locally and has not been synced to MailerLite.";
+                    }
+                    
+                    return $description;
+                })
+                ->modalSubmitActionLabel('Yes, Delete Group')
+                ->modalCancelActionLabel('Cancel')
+                ->action(function (Group $record) {
+                    try {
+                        // Delete from MailerLite first if it exists there
+                        if ($record->mailerlite_id) {
+                            try {
+                                $result = MailerLite::groups()->delete($record->mailerlite_id);
+                                
+                                // Send success notification for MailerLite deletion
+                                Notification::make()
+                                    ->title('Group deleted from MailerLite')
+                                    ->body("The group '{$record->name}' has been successfully deleted from MailerLite.")
+                                    ->success()
+                                    ->send();
+                            } catch (\Throwable $e) {
+                                // If MailerLite deletion fails, we still want to delete locally
+                                // but we should notify the user
+                                Notification::make()
+                                    ->title('Warning: MailerLite deletion failed')
+                                    ->body("The group will be deleted locally but could not be deleted from MailerLite: {$e->getMessage()}")
+                                    ->warning()
+                                    ->persistent()
+                                    ->send();
+                            }
+                        } else {
+                            // Group only exists locally, no MailerLite deletion needed
+                            Notification::make()
+                                ->title('Local group deletion')
+                                ->body("The group '{$record->name}' only exists locally and will be deleted from the database.")
+                                ->info()
+                                ->send();
+                        }
+                        
+                        // Delete from local database
+                        $record->delete();
+                        
+                        // Send final success notification
+                        Notification::make()
+                            ->title('Group deleted successfully')
+                            ->body(function () use ($record) {
+                                if ($record->mailerlite_id) {
+                                    return "The group '{$record->name}' has been deleted from both the local database and MailerLite.";
+                                } else {
+                                    return "The group '{$record->name}' has been deleted from the local database.";
+                                }
+                            })
+                            ->success()
+                            ->send();
+                            
+                    } catch (\Throwable $e) {
+                        Notification::make()
+                            ->title('Delete failed')
+                            ->body("Failed to delete group: {$e->getMessage()}")
+                            ->danger()
+                            ->send();
                     }
                 }),
         ])->headerActions([
@@ -63,17 +132,32 @@ class GroupResource extends Resource
                     try {
                         $resp = MailerLite::groups()->list();
                         $items = $resp['data'] ?? [];
-                        foreach ($items as $g) {
-                            Group::updateOrCreate(
-                                ['mailerlite_id' => $g['id'] ?? null],
-                                [
-                                    'name' => $g['name'] ?? null,
-                                    'description' => $g['description'] ?? null,
-                                    'total' => $g['total'] ?? 0,
-                                ]
-                            );
+                        
+                        if (empty($items)) {
+                            Notification::make()->title('No groups found')->body('No groups were found in your MailerLite account')->warning()->send();
+                            return;
                         }
-                        Notification::make()->title('Groups imported')->success()->send();
+                        
+                        $importedCount = 0;
+                        foreach ($items as $g) {
+                            if (!empty($g['id']) && !empty($g['name'])) {
+                                Group::updateOrCreate(
+                                    ['mailerlite_id' => $g['id']],
+                                    [
+                                        'name' => $g['name'],
+                                        'description' => $g['description'] ?? null,
+                                        'total' => $g['total'] ?? 0,
+                                    ]
+                                );
+                                $importedCount++;
+                            }
+                        }
+                        
+                        if ($importedCount > 0) {
+                            Notification::make()->title('Groups imported successfully')->body("Imported {$importedCount} group(s) from MailerLite")->success()->send();
+                        } else {
+                            Notification::make()->title('No valid groups found')->body('Found groups but none had valid IDs or names')->warning()->send();
+                        }
                     } catch (\Throwable $e) {
                         Notification::make()->title('Import failed')->body($e->getMessage())->danger()->send();
                     }
@@ -88,8 +172,8 @@ class GroupResource extends Resource
         }
         return [
             'index' => Pages\ListGroups::route('/'),
-            'create' => Pages\CreateGroup::route('/create'),
-            'edit' => Pages\EditGroup::route('/{record}/edit'),
+           // 'create' => Pages\CreateGroup::route('/create'),
+            //'edit' => Pages\EditGroup::route('/{record}/edit'),
         ];
     }
 }
