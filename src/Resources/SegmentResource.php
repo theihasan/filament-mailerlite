@@ -48,10 +48,50 @@ class SegmentResource extends Resource
                         Notification::make()->title('Sync failed')->body($e->getMessage())->danger()->send();
                     }
                 }),
-            Tables\Actions\DeleteAction::make()->icon($icons['delete'] ?? 'heroicon-o-trash')
-                ->after(function (Segment $record) {
+            Tables\Actions\DeleteAction::make()
+                ->icon($icons['delete'] ?? 'heroicon-o-trash')
+                ->requiresConfirmation()
+                ->modalHeading('Delete Segment')
+                ->modalDescription(function (Segment $record) {
+                    $description = "Are you sure you want to delete the segment '{$record->name}'?";
+                    
                     if ($record->mailerlite_id) {
-                        try { MailerLite::segments()->delete($record->mailerlite_id); } catch (\Throwable $e) {}
+                        $description .= "\n\nThis will also delete the segment from MailerLite and cannot be undone.";
+                    } else {
+                        $description .= "\n\nThis segment only exists locally and has not been synced to MailerLite.";
+                    }
+                    
+                    return $description;
+                })
+                ->modalSubmitActionLabel('Yes, Delete Segment')
+                ->modalCancelActionLabel('Cancel')
+                ->successNotification(
+                    Notification::make()
+                        ->title('Segment deleted successfully')
+                        ->body(function (Segment $record) {
+                            if ($record->mailerlite_id) {
+                                return "The segment '{$record->name}' has been deleted from both the local database and MailerLite.";
+                            } else {
+                                return "The segment '{$record->name}' has been deleted from the local database.";
+                            }
+                        })
+                        ->success()
+                )
+                ->before(function (Segment $record) {
+                    // Delete from MailerLite first if it exists there
+                    if ($record->mailerlite_id) {
+                        try {
+                            MailerLite::segments()->delete($record->mailerlite_id);
+                        } catch (\Throwable $e) {
+                            // If MailerLite deletion fails, we still want to delete locally
+                            // but we should notify the user
+                            Notification::make()
+                                ->title('Warning: MailerLite deletion failed')
+                                ->body("The segment was deleted locally but could not be deleted from MailerLite: {$e->getMessage()}")
+                                ->warning()
+                                ->persistent()
+                                ->send();
+                        }
                     }
                 }),
         ])->headerActions([

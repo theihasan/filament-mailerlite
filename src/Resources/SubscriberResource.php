@@ -253,7 +253,51 @@ class SubscriberResource extends Resource
                     })
                     ->requiresConfirmation(),
                 Tables\Actions\DeleteAction::make()
-                    ->icon($icons['delete'] ?? 'heroicon-o-trash'),
+                    ->icon($icons['delete'] ?? 'heroicon-o-trash')
+                    ->requiresConfirmation()
+                    ->modalHeading('Delete Subscriber')
+                    ->modalDescription(function (Subscriber $record) {
+                        $description = "Are you sure you want to delete the subscriber '{$record->email}'?";
+                        
+                        if ($record->mailerlite_id) {
+                            $description .= "\n\nThis will also delete the subscriber from MailerLite and cannot be undone.";
+                        } else {
+                            $description .= "\n\nThis subscriber only exists locally and has not been synced to MailerLite.";
+                        }
+                        
+                        return $description;
+                    })
+                    ->modalSubmitActionLabel('Yes, Delete Subscriber')
+                    ->modalCancelActionLabel('Cancel')
+                    ->successNotification(
+                        Notification::make()
+                            ->title('Subscriber deleted successfully')
+                            ->body(function (Subscriber $record) {
+                                if ($record->mailerlite_id) {
+                                    return "The subscriber '{$record->email}' has been deleted from both the local database and MailerLite.";
+                                } else {
+                                    return "The subscriber '{$record->email}' has been deleted from the local database.";
+                                }
+                            })
+                            ->success()
+                    )
+                    ->before(function (Subscriber $record) {
+                        // Delete from MailerLite first if it exists there
+                        if ($record->mailerlite_id) {
+                            try {
+                                MailerLite::subscribers()->delete($record->mailerlite_id);
+                            } catch (\Throwable $e) {
+                                // If MailerLite deletion fails, we still want to delete locally
+                                // but we should notify the user
+                                Notification::make()
+                                    ->title('Warning: MailerLite deletion failed')
+                                    ->body("The subscriber was deleted locally but could not be deleted from MailerLite: {$e->getMessage()}")
+                                    ->warning()
+                                    ->persistent()
+                                    ->send();
+                            }
+                        }
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
