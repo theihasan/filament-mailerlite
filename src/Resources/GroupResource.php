@@ -36,7 +36,36 @@ class GroupResource extends Resource
             Tables\Columns\TextColumn::make('total')->numeric()->sortable(),
             Tables\Columns\TextColumn::make('updated_at')->dateTime()->toggleable(isToggledHiddenByDefault: true),
         ])->actions([
-            Tables\Actions\EditAction::make()->icon($icons['edit'] ?? 'heroicon-o-pencil-square'),
+            Tables\Actions\EditAction::make()
+                ->icon($icons['edit'] ?? 'heroicon-o-pencil-square')
+                ->form([
+                    Forms\Components\TextInput::make('name')
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\Textarea::make('description')
+                        ->required()
+                        ->rows(3),
+                ])
+                ->using(function (Group $record, array $data): Group {
+                    $record->update($data);
+                
+                    try {
+                        $record->syncWithMailerLite();
+                        Notification::make()
+                            ->title('Group updated and synced')
+                            ->body("Group '{$record->name}' was updated and synced with MailerLite.")
+                            ->success()
+                            ->send();
+                    } catch (\Throwable $e) {
+                        Notification::make()
+                            ->title('Updated locally, sync failed')
+                            ->body('Could not sync with MailerLite: ' . $e->getMessage())
+                            ->warning()
+                            ->send();
+                    }
+                    
+                    return $record;
+                }),
             Tables\Actions\Action::make('sync')
                 ->label('Sync to MailerLite')
                 ->icon($icons['sync'] ?? 'heroicon-o-arrow-path')
@@ -72,7 +101,7 @@ class GroupResource extends Resource
                         // Delete from MailerLite first if it exists there
                         if ($record->mailerlite_id) {
                             try {
-                                $result = MailerLite::groups()->delete($record->mailerlite_id);
+                                $result = MailerLite::groups()->delete((string) $record->mailerlite_id);
                                 
                                 // Send success notification for MailerLite deletion
                                 Notification::make()
@@ -124,7 +153,24 @@ class GroupResource extends Resource
                     }
                 }),
         ])->headerActions([
-            Tables\Actions\CreateAction::make()->icon($icons['create'] ?? 'heroicon-o-plus-circle'),
+            Tables\Actions\CreateAction::make()
+                ->icon($icons['create'] ?? 'heroicon-o-plus-circle')
+                ->after(function (Group $record) {
+                    try {
+                        $record->syncWithMailerLite();
+                        Notification::make()
+                            ->title('Group created and synced')
+                            ->body("Group '{$record->name}' was created and synced with MailerLite.")
+                            ->success()
+                            ->send();
+                    } catch (\Throwable $e) {
+                        Notification::make()
+                            ->title('Created locally, sync failed')
+                            ->body('Could not sync with MailerLite: ' . $e->getMessage())
+                            ->warning()
+                            ->send();
+                    }
+                }),
             Tables\Actions\Action::make('import')
                 ->label('Import from MailerLite')
                 ->icon($icons['import'] ?? 'heroicon-o-cloud-arrow-down')
@@ -173,7 +219,6 @@ class GroupResource extends Resource
         return [
             'index' => Pages\ListGroups::route('/'),
            // 'create' => Pages\CreateGroup::route('/create'),
-            //'edit' => Pages\EditGroup::route('/{record}/edit'),
         ];
     }
 }
