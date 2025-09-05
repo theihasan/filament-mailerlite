@@ -27,6 +27,30 @@ class GroupResource extends Resource
         ]);
     }
 
+    public static function infolist(\Filament\Infolists\Infolist $infolist): \Filament\Infolists\Infolist
+    {
+        return $infolist->schema([
+            \Filament\Infolists\Components\TextEntry::make('name')
+                ->label('Group Name'),
+            \Filament\Infolists\Components\TextEntry::make('mailerlite_id')
+                ->label('MailerLite ID')
+                ->copyable(),
+            \Filament\Infolists\Components\TextEntry::make('description')
+                ->label('Description'),
+            \Filament\Infolists\Components\TextEntry::make('total')
+                ->label('Total Subscribers')
+                ->numeric(),
+            \Filament\Infolists\Components\TextEntry::make('type')
+                ->label('Type'),
+            \Filament\Infolists\Components\TextEntry::make('created_at')
+                ->label('Created At')
+                ->dateTime(),
+            \Filament\Infolists\Components\TextEntry::make('updated_at')
+                ->label('Updated At')
+                ->dateTime(),
+        ]);
+    }
+
     public static function table(Table $table): Table
     {
         $icons = config('filament-mailerlite.icons.actions');
@@ -36,6 +60,8 @@ class GroupResource extends Resource
             Tables\Columns\TextColumn::make('total')->numeric()->sortable(),
             Tables\Columns\TextColumn::make('updated_at')->dateTime()->toggleable(isToggledHiddenByDefault: true),
         ])->actions([
+            Tables\Actions\ViewAction::make()
+                ->icon($icons['view'] ?? 'heroicon-o-eye'),
             Tables\Actions\EditAction::make()
                 ->icon($icons['edit'] ?? 'heroicon-o-pencil-square')
                 ->form([
@@ -185,8 +211,11 @@ class GroupResource extends Resource
                         }
                         
                         $importedCount = 0;
-                        foreach ($items as $g) {
-                            if (!empty($g['id']) && !empty($g['name'])) {
+                        collect($items)
+                            ->reject(function ($g) {
+                                return empty($g['id']) && empty($g['name']);
+                            })
+                            ->each(function ($g) use (&$importedCount) {
                                 Group::updateOrCreate(
                                     ['mailerlite_id' => $g['id']],
                                     [
@@ -196,8 +225,7 @@ class GroupResource extends Resource
                                     ]
                                 );
                                 $importedCount++;
-                            }
-                        }
+                            });
                         
                         if ($importedCount > 0) {
                             Notification::make()->title('Groups imported successfully')->body("Imported {$importedCount} group(s) from MailerLite")->success()->send();
@@ -219,6 +247,7 @@ class GroupResource extends Resource
         return [
             'index' => Pages\ListGroups::route('/'),
            // 'create' => Pages\CreateGroup::route('/create'),
+            'view' => Pages\ViewGroup::route('/{record}'),
         ];
     }
 }
