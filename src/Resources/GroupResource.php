@@ -39,7 +39,20 @@ class GroupResource extends Resource
                 ->label('Description'),
             \Filament\Infolists\Components\TextEntry::make('total')
                 ->label('Total Subscribers')
-                ->numeric(),
+                ->numeric()
+                ->getStateUsing(function ($record) {
+                    try {
+                        if (!$record->mailerlite_id) {
+                            return 'Not synced';
+                        }
+                        
+                        $response = \Ihasan\LaravelMailerlite\Facades\MailerLite::groups()->getSubscribers($record->mailerlite_id);
+                        $subscribers = $response['data'] ?? [];
+                        return count($subscribers);
+                    } catch (\Throwable $e) {
+                        return 'Error fetching count';
+                    }
+                }),
             \Filament\Infolists\Components\TextEntry::make('type')
                 ->label('Type'),
             \Filament\Infolists\Components\TextEntry::make('created_at')
@@ -48,6 +61,13 @@ class GroupResource extends Resource
             \Filament\Infolists\Components\TextEntry::make('updated_at')
                 ->label('Updated At')
                 ->dateTime(),
+            \Filament\Infolists\Components\Section::make('Group Subscribers')
+                ->columns(2)
+                ->schema([
+                    \Ihasan\FilamentMailerLite\Infolists\Components\SubscribersTable::make('subscribers')
+                        ->label(''),
+                ])
+                ->visible(fn ($record) => $record->mailerlite_id !== null),
         ]);
     }
 

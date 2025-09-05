@@ -17,6 +17,40 @@ class ViewGroup extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+            Actions\Action::make('view_members')
+                ->label('View Members')
+                ->icon('heroicon-o-users')
+                ->color('info')
+                ->action(function () {
+                    try {
+                        $group = $this->record;
+                        
+                        if (!$group->mailerlite_id) {
+                            Notification::make()
+                                ->title('Cannot view members')
+                                ->body('This group has not been synced with MailerLite yet. Please sync the group first.')
+                                ->warning()
+                                ->send();
+                            return;
+                        }
+
+                        $response = MailerLite::groups()->getSubscribers($group->mailerlite_id);
+                        $subscribers = $response['data'] ?? [];
+                        $totalMembers = count($subscribers);
+
+                        Notification::make()
+                            ->title('Group Members')
+                            ->body("Group '{$group->name}' has {$totalMembers} member(s).")
+                            ->success()
+                            ->send();
+                    } catch (\Throwable $e) {
+                        Notification::make()
+                            ->title('Failed to get members')
+                            ->body('Failed to fetch group members: ' . $e->getMessage())
+                            ->danger()
+                            ->send();
+                    }
+                }),
             Actions\Action::make('import_subscribers')
                 ->label('Add Subscribers to Group')
                 ->icon('heroicon-o-user-plus')
