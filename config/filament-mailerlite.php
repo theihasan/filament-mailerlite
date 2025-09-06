@@ -44,6 +44,38 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Navigation Settings
+    |--------------------------------------------------------------------------
+    |
+    | Control whether the MailerLite navigation dropdown is shown in the
+    | Filament admin panel. Set to false to hide the entire MailerLite
+    | navigation section.
+    |
+    */
+    'show_navigation' => env('MAILERLITE_SHOW_NAVIGATION', true),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Resource Navigation Settings
+    |--------------------------------------------------------------------------
+    |
+    | Control which resources are shown in the navigation menu.
+    | Set to false to hide specific resources from the navigation.
+    |
+    */
+    'resources' => [
+        'subscribers' => env('MAILERLITE_SHOW_SUBSCRIBERS_NAVIGATION', false),
+        'campaigns' => env('MAILERLITE_SHOW_CAMPAIGNS_NAVIGATION', false),
+        'groups' => env('MAILERLITE_SHOW_GROUPS_NAVIGATION', false),
+        'segments' => env('MAILERLITE_SHOW_SEGMENTS_NAVIGATION', false),
+    ],
+
+    'pages' => [
+        'dashboard' => env('MAILERLITE_SHOW_DASHBOARD_NAVIGATION', false),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | UI Icons
     |--------------------------------------------------------------------------
     |

@@ -19,6 +19,11 @@ class SegmentResource extends Resource
     protected static ?string $navigationIcon = null;
     protected static ?string $navigationLabel = 'Segments';
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return config('filament-mailerlite.resources.segments', true);
+    }
+
     public static function form(Form $form): Form
     {
         return $form->schema([

@@ -19,6 +19,12 @@ class CampaignResource extends Resource
     protected static ?string $navigationIcon = null;
     protected static ?string $navigationLabel = 'Campaigns';
     protected static ?int $navigationSort = 3;
+    protected static bool $shouldRegisterNavigation = false;
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return config('filament-mailerlite.resources.campaigns', false);
+    }
 
     public static function form(Form $form): Form
     {

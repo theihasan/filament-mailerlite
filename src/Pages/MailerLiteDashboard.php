@@ -24,6 +24,11 @@ class MailerLiteDashboard extends Page
         return 'MailerLite Dashboard';
     }
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return config('filament-mailerlite.pages.dashboard', false);
+    }
+
     protected function getHeaderActions(): array
     {
         return [

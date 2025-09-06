@@ -29,6 +29,11 @@ class SubscriberResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Subscribers';
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return config('filament-mailerlite.resources.subscribers', true);
+    }
+
     protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form

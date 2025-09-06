@@ -19,6 +19,11 @@ class GroupResource extends Resource
     protected static ?string $navigationIcon = null;
     protected static ?string $navigationLabel = 'Groups';
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return config('filament-mailerlite.resources.groups', true);
+    }
+
     public static function form(Form $form): Form
     {
         return $form->schema([
