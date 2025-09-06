@@ -48,7 +48,7 @@ class GroupResource extends Resource
                         
                         $response = \Ihasan\LaravelMailerlite\Facades\MailerLite::groups()->getSubscribers($record->mailerlite_id);
                         $subscribers = $response['data'] ?? [];
-                        return count($subscribers);
+                        return collect($subscribers)->count();
                     } catch (\Throwable $e) {
                         return 'Error fetching count';
                     }
