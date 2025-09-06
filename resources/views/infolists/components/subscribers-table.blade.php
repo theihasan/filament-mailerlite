@@ -1,8 +1,9 @@
+<div>
+<div class="subscribers-table-wrapper">
 @php
     $subscribers = $getSubscribers();
 @endphp
 
-<div class="subscribers-table-wrapper">
     @if(empty($subscribers))
         <div class="text-center py-12">
             <div class="mx-auto h-12 w-12 text-gray-400">

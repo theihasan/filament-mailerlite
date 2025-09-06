@@ -62,7 +62,7 @@ class GroupResource extends Resource
                 ->label('Updated At')
                 ->dateTime(),
             \Filament\Infolists\Components\Section::make('Group Subscribers')
-                ->columns(2)
+                
                 ->schema([
                     \Ihasan\FilamentMailerLite\Infolists\Components\SubscribersTable::make('subscribers')
                         ->label(''),
